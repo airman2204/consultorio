@@ -297,36 +297,6 @@ export function BookingSection() {
                 )}
               </button>
             </form>
-
-            {/* Vista previa en vivo del pase de cita */}
-            <div className="rounded-3xl bg-slate-ink text-bg-bone p-6 space-y-3 shadow-sm">
-              <div className="flex items-center justify-between text-xs opacity-75">
-                <span>Vista previa · Pase de cita</span>
-                <span>WhatsApp Automático</span>
-              </div>
-              <p className="font-serif text-lg">
-                {patientName || 'Tu pequeño'} ·{' '}
-                {STAGE_OPTIONS.find((s) => s.value === serviceStage)?.label}
-              </p>
-              <div className="space-y-1.5 text-xs opacity-90">
-                <p className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-primary-pink" />
-                  <span>{selectedDate}</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-sage-green" />
-                  <span>
-                    {selectedSlot
-                      ? `${selectedSlot.label} hrs (45 min)`
-                      : 'Selecciona un horario'}
-                  </span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-warm-sand" />
-                  <span>Consultorio 819, Torre I, Hospital MAC Puebla</span>
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       )}
