@@ -38,6 +38,13 @@ export default async function BlogArticlePage({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Contenido principal */}
           <div className="lg:col-span-8 rounded-3xl bg-white border border-slate-ink/10 p-6 sm:p-10 shadow-xs space-y-6">
+            <div className="h-60 sm:h-72 w-full rounded-2xl overflow-hidden">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-ink/70">
               <span
                 className="px-3 py-1 rounded-full font-medium text-slate-ink"

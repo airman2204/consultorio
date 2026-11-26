@@ -5,6 +5,7 @@ export interface BlogPost {
   readTime: string;
   date: string;
   excerpt: string;
+  image: string;
   accentColor: string;
   sections: {
     heading: string;
@@ -23,6 +24,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: '12 May 2025',
     excerpt:
       'La fiebre es una respuesta natural de defensa, pero saber cuándo acudir a valoración marca la diferencia. Aprende a identificar los signos clave.',
+    image: '/images/blog-fiebre.jpg',
     accentColor: '#E5C0C8',
     sections: [
       {
@@ -61,6 +63,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: '28 Abr 2025',
     excerpt:
       'Señales de preparación a los 6 meses, texturas seguras y cómo introducir alimentos potencialmente alergénicos sin estrés.',
+    image: '/images/blog-alimentacion.jpg',
     accentColor: '#C7D5B8',
     sections: [
       {
@@ -98,6 +101,7 @@ export const BLOG_POSTS: BlogPost[] = [
     date: '15 Abr 2025',
     excerpt:
       'Del cordón umbilical al sueño seguro y las primeras visitas de control de niño sano: todo lo que necesitas para tus primeras semanas.',
+    image: '/images/blog-recien-nacido.jpg',
     accentColor: '#E0C9A6',
     sections: [
       {

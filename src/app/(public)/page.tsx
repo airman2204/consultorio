@@ -256,14 +256,12 @@ export default function LandingPage() {
             className="lg:col-span-5 relative flex items-center justify-center"
           >
             <div className="relative w-72 h-72 sm:w-88 sm:h-88 rounded-full border-4 border-sage-green/60 bg-white p-3 shadow-[0_20px_60px_rgba(61,74,69,0.08)] flex items-center justify-center">
-              <div className="w-full h-full rounded-full bg-linear-to-br from-sage-green/25 via-bg-bone to-primary-pink/25 flex flex-col items-center justify-center text-center p-6">
-                <Sparkles className="w-8 h-8 text-primary-pink mb-3" />
-                <p className="font-serif text-2xl text-slate-ink">
-                  Dra. Perla Núñez
-                </p>
-                <p className="text-xs uppercase tracking-[0.18em] text-slate-ink/65 mt-1">
-                  Pediatra Certificada
-                </p>
+              <div className="w-full h-full rounded-full overflow-hidden relative bg-bg-bone">
+                <img
+                  src="/images/hero-pediatra.jpg"
+                  alt="Dra. Perla Yareli Núñez García revisando a un bebé en consulta"
+                  className="w-full h-full object-cover"
+                />
               </div>
 
               {/* Tarjeta flotante superior */}
@@ -422,28 +420,39 @@ export default function LandingPage() {
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group rounded-3xl bg-white border border-slate-ink/10 p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                  className="group rounded-3xl bg-white border border-slate-ink/10 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-xs text-slate-ink/65">
-                      <span
-                        className="px-3 py-1 rounded-full font-medium text-slate-ink"
-                        style={{ backgroundColor: `${post.accentColor}55` }}
-                      >
-                        {post.category}
-                      </span>
-                      <span>{post.readTime}</span>
+                  <div>
+                    <div className="h-44 w-full overflow-hidden">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     </div>
-                    <h3 className="font-serif text-xl text-slate-ink group-hover:underline">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm text-slate-ink/75 line-clamp-3">
-                      {post.excerpt}
-                    </p>
+                    <div className="p-6 space-y-3">
+                      <div className="flex items-center justify-between text-xs text-slate-ink/65">
+                        <span
+                          className="px-3 py-1 rounded-full font-medium text-slate-ink"
+                          style={{ backgroundColor: `${post.accentColor}55` }}
+                        >
+                          {post.category}
+                        </span>
+                        <span>{post.readTime}</span>
+                      </div>
+                      <h3 className="font-serif text-xl text-slate-ink group-hover:underline">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm text-slate-ink/75 line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                    </div>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-slate-ink">
-                    Leer guía <ArrowRight className="w-4 h-4" />
-                  </span>
+                  <div className="px-6 pb-6">
+                    <span className="inline-flex items-center gap-1 text-sm font-medium text-slate-ink">
+                      Leer guía <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>

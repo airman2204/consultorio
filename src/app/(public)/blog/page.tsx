@@ -98,10 +98,13 @@ export default function BlogIndexPage() {
               className="group rounded-3xl bg-white border border-slate-ink/10 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div>
-                <div
-                  className="h-3 w-full"
-                  style={{ backgroundColor: post.accentColor }}
-                />
+                <div className="h-44 w-full overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
                 <div className="p-6 space-y-3">
                   <div className="flex items-center justify-between text-xs text-slate-ink/65">
                     <span className="px-3 py-1 rounded-full bg-bg-bone font-medium text-slate-ink">
