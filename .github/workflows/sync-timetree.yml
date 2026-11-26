@@ -1,0 +1,67 @@
+name: Sync TimeTree to Supabase
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync TimeTree events to Supabase
+        env:
+          TIMETREE_SESSION_COOKIE: ${{ secrets.TIMETREE_SESSION_COOKIE }}
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node -e '
+          (async () => {
+            const headers = {
+              Cookie: `_session_id=${process.env.TIMETREE_SESSION_COOKIE}`,
+              "X-Timetreea": "web/2.1.0/en"
+            };
+            const calRes = await fetch("https://timetreeapp.com/api/v1/calendars?since=0", { headers });
+            if (!calRes.ok) {
+              console.error("TimeTree calendars error:", calRes.status);
+              process.exit(1);
+            }
+            const calData = await calRes.json();
+            const calId = calData.calendars?.[0]?.id;
+            if (!calId) {
+              console.log("No calendar found");
+              return;
+            }
+            const evRes = await fetch(`https://timetreeapp.com/api/v1/calendar/${calId}/events/sync`, { headers });
+            if (!evRes.ok) {
+              console.error("TimeTree events error:", evRes.status);
+              process.exit(1);
+            }
+            const evData = await evRes.json();
+            const active = (evData.events || []).filter(e => e.deactivated_at === null && e.start_at && e.end_at);
+            console.log("Active events:", active.length);
+            if (active.length === 0) return;
+            const rows = active.map(e => ({
+              external_event_id: e.id,
+              title: e.title || "Horario Ocupado - Consultorio Compartido",
+              start_time: new Date(e.start_at).toISOString(),
+              end_time: new Date(e.end_at).toISOString(),
+              synced_at: new Date().toISOString()
+            }));
+            const sbRes = await fetch(`${process.env.SUPABASE_URL}/rest/v1/timetree_busy_blocks?on_conflict=external_event_id`, {
+              method: "POST",
+              headers: {
+                apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+                Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+                "Content-Type": "application/json",
+                Prefer: "resolution=merge-duplicates"
+              },
+              body: JSON.stringify(rows)
+            });
+            console.log("Supabase status:", sbRes.status);
+            if (!sbRes.ok) {
+              console.error(await sbRes.text());
+              process.exit(1);
+            }
+          })();
+          '
