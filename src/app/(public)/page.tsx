@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { ScallopedDivider } from '@/components/brand/ScallopedDivider';
 import { LeadMagnetCard } from '@/components/blog/LeadMagnetCard';
+import { BookingSection } from '@/components/booking/BookingSection';
 import { BLOG_POSTS } from '@/data/blog-posts';
 
 const ORGANIC_EASE = [0.22, 1, 0.36, 1] as const;
@@ -464,58 +465,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SECCIÓN UBICACIÓN */}
+      {/* SECCIÓN AGENDA & UBICACIÓN */}
       <section id="ubicacion" className="py-16 md:py-24 px-4 sm:px-6 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="rounded-[2rem] bg-bg-bone border border-slate-ink/10 p-8 md:p-12 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-ink/60">
-                Ubicación y Citas
-              </p>
-              <h2 className="font-serif text-3xl text-slate-ink">
-                Consultorio 819, Torre I
-                <br />
-                Hospital MAC Puebla
-              </h2>
-              <p className="text-sm text-slate-ink/80 leading-relaxed">
-                Agenda tu valoración pediátrica con horarios sincronizados en
-                tiempo real o escríbenos directamente por WhatsApp.
-              </p>
-
-              <div className="space-y-2 text-sm text-slate-ink/85 pt-2">
-                <p className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary-pink shrink-0" />
-                  <span>Hospital MAC Puebla · Torre I, Consultorio 819</span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-sage-green shrink-0" />
-                  <span>Lun–Vie 9:00–19:00 · Sáb 9:00–14:00</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <a
-                href="https://maps.google.com/?q=Hospital+MAC+Puebla"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-white border border-slate-ink/15 text-slate-ink font-medium text-sm hover:bg-white/70 transition"
-              >
-                <MapPin className="w-4 h-4" />
-                <span>Abrir en Google Maps</span>
-              </a>
-
-              <a
-                href="https://wa.me/522214432870?text=Hola%20Dra.%20Perla,%20me%20gustar%C3%ADa%20agendar%20una%20valoraci%C3%B3n%20pedi%C3%A1trica."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-primary-pink text-slate-ink font-medium text-sm shadow-sm hover:brightness-95 transition"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Agendar por WhatsApp · 221 443 2870</span>
-              </a>
-            </div>
-          </div>
+        <div className="max-w-6xl mx-auto">
+          <BookingSection />
         </div>
       </section>
     </div>
