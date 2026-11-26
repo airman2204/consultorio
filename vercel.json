@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/timetree/sync",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

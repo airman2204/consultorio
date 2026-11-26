@@ -1,73 +1,73 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-interface ParsedEvent {
-  external_event_id: string;
-  title: string;
-  start_time: string;
-  end_time: string;
+interface TimeTreeEvent {
+  id: string;
+  title?: string;
+  start_at: number;
+  end_at: number;
+  deactivated_at: number | null;
 }
 
-function parseIcsDate(raw: string): string | null {
-  const clean = raw.trim();
-  const match = clean.match(
-    /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)$/
-  );
-  if (!match) return null;
-  const [, y, m, d, hh, mm, ss, z] = match;
-  return `${y}-${m}-${d}T${hh}:${mm}:${ss}${z || '-06:00'}`;
-}
+async function syncFromTimeTreeSession(sessionId: string) {
+  const headers = {
+    Cookie: `_session_id=${sessionId}`,
+    'X-Timetreea': 'web/2.1.0/en',
+  };
 
-function parseIcsEvents(icsText: string): ParsedEvent[] {
-  const blocks = icsText.split('BEGIN:VEVENT').slice(1);
-  const events: ParsedEvent[] = [];
+  const calRes = await fetch('https://timetreeapp.com/api/v1/calendars?since=0', {
+    headers,
+    cache: 'no-store',
+  });
 
-  for (const block of blocks) {
-    const endIdx = block.indexOf('END:VEVENT');
-    const content = endIdx >= 0 ? block.slice(0, endIdx) : block;
-
-    const uid = content.match(/UID:(.+)/)?.[1]?.trim();
-    const summary =
-      content.match(/SUMMARY:(.+)/)?.[1]?.trim() ||
-      'Horario Ocupado - Consultorio Compartido';
-    const dtStartRaw = content.match(/DTSTART[^:]*:(.+)/)?.[1];
-    const dtEndRaw = content.match(/DTEND[^:]*:(.+)/)?.[1];
-
-    if (!dtStartRaw || !dtEndRaw) continue;
-    const startIso = parseIcsDate(dtStartRaw);
-    const endIso = parseIcsDate(dtEndRaw);
-    if (!startIso || !endIso) continue;
-
-    events.push({
-      external_event_id: uid || `${startIso}-${endIso}`,
-      title: summary,
-      start_time: new Date(startIso).toISOString(),
-      end_time: new Date(endIso).toISOString(),
-    });
+  if (!calRes.ok) {
+    throw new Error(`TimeTree calendars error: ${calRes.status}`);
   }
 
-  return events;
+  const calData = (await calRes.json()) as {
+    calendars?: { id: number; name: string }[];
+  };
+
+  const targetCalendarId =
+    process.env.TIMETREE_CALENDAR_ID || calData.calendars?.[0]?.id;
+
+  if (!targetCalendarId) {
+    return [];
+  }
+
+  const evRes = await fetch(
+    `https://timetreeapp.com/api/v1/calendar/${targetCalendarId}/events/sync`,
+    { headers, cache: 'no-store' }
+  );
+
+  if (!evRes.ok) {
+    throw new Error(`TimeTree events error: ${evRes.status}`);
+  }
+
+  const evData = (await evRes.json()) as { events?: TimeTreeEvent[] };
+  const activeEvents = (evData.events || []).filter(
+    (ev) => ev.deactivated_at === null && ev.start_at && ev.end_at
+  );
+
+  return activeEvents.map((ev) => ({
+    external_event_id: ev.id,
+    title: ev.title || 'Horario Ocupado - Consultorio Compartido',
+    start_time: new Date(ev.start_at).toISOString(),
+    end_time: new Date(ev.end_at).toISOString(),
+  }));
 }
 
-export async function POST() {
+async function handleSync() {
   try {
-    const feedUrl =
-      process.env.TIMETREE_CALENDAR_URL || 'https://timetr.ee/dl/reco';
-
-    const res = await fetch(feedUrl, {
-      headers: { Accept: 'text/calendar, text/plain, */*' },
-      cache: 'no-store',
-    });
-
-    if (!res.ok) {
+    const sessionId = process.env.TIMETREE_SESSION_COOKIE;
+    if (!sessionId) {
       return NextResponse.json(
-        { ok: false, error: 'No se pudo consultar el calendario TimeTree.' },
-        { status: 502 }
+        { ok: false, error: 'TIMETREE_SESSION_COOKIE no configurada.' },
+        { status: 400 }
       );
     }
 
-    const text = await res.text();
-    const events = text.includes('BEGIN:VEVENT') ? parseIcsEvents(text) : [];
+    const events = await syncFromTimeTreeSession(sessionId);
 
     if (
       events.length > 0 &&
@@ -99,8 +99,16 @@ export async function POST() {
   } catch (err) {
     console.error('TimeTree sync error:', err);
     return NextResponse.json(
-      { ok: false, error: 'Error interno al sincronizar TimeTree.' },
+      { ok: false, error: 'Error al sincronizar con TimeTree.' },
       { status: 500 }
     );
   }
+}
+
+export async function GET() {
+  return handleSync();
+}
+
+export async function POST() {
+  return handleSync();
 }
