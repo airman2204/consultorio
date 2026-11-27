@@ -48,8 +48,8 @@ jobs:
               end_time: new Date(e.end_at).toISOString(),
               synced_at: new Date().toISOString()
             }));
-            const baseUrl = process.env.SUPABASE_URL.replace(/\/+$/, "");
-            const sbRes = await fetch(`${baseUrl}/rest/v1/timetree_busy_blocks?on_conflict=external_event_id`, {
+            const origin = new URL(process.env.SUPABASE_URL.trim()).origin;
+            const sbRes = await fetch(`${origin}/rest/v1/timetree_busy_blocks?on_conflict=external_event_id`, {
               method: "POST",
               headers: {
                 apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
