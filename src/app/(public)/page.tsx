@@ -290,7 +290,7 @@ export default function LandingPage() {
                     Agenda en línea
                   </p>
                   <p className="text-xs font-semibold text-slate-ink">
-                    Sincronizada con TimeTree
+                    Disponibilidad en tiempo real
                   </p>
                 </div>
               </motion.div>

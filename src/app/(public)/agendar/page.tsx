@@ -121,7 +121,7 @@ export default function AgendarPage() {
         </div>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sage-green/40 text-slate-ink text-xs font-medium self-start">
           <RefreshCw className="w-3.5 h-3.5" />
-          <span>Sincronizado con TimeTree</span>
+          <span>Disponibilidad en tiempo real</span>
         </div>
       </div>
 
