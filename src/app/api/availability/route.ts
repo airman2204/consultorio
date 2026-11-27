@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 const SLOT_DURATION_MINUTES = 45;
@@ -42,9 +43,15 @@ export async function GET(request: Request) {
 
   if (
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
-    process.env.SUPABASE_SERVICE_ROLE_KEY
+    (process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   ) {
-    const supabase = createAdminClient();
+    const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
+      ? createAdminClient()
+      : createSupabaseClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
 
     const [timetreeRes, appointmentsRes] = await Promise.all([
       supabase
@@ -59,6 +66,13 @@ export async function GET(request: Request) {
         .lt('start_time', dayEnd.toISOString())
         .gt('end_time', dayStart.toISOString()),
     ]);
+
+    if (timetreeRes.error) {
+      console.error('timetree_busy_blocks error:', timetreeRes.error);
+    }
+    if (appointmentsRes.error) {
+      console.error('appointments error:', appointmentsRes.error);
+    }
 
     const external = (timetreeRes.data || []).map((b) => ({
       start: new Date(b.start_time),
