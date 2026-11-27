@@ -40,7 +40,6 @@ export async function GET(request: Request) {
   const dayEnd = new Date(`${date}T23:59:59-06:00`);
 
   let busyRanges: { start: Date; end: Date }[] = [];
-  let debugError: string | null = null;
 
   if (
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -50,8 +49,8 @@ export async function GET(request: Request) {
     const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY
       ? createAdminClient()
       : createSupabaseClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+          new URL(process.env.NEXT_PUBLIC_SUPABASE_URL.trim()).origin,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim()
         );
 
     const [timetreeRes, appointmentsRes] = await Promise.all([
@@ -69,7 +68,6 @@ export async function GET(request: Request) {
     ]);
 
     if (timetreeRes.error) {
-      debugError = timetreeRes.error.message;
       console.error('timetree_busy_blocks error:', timetreeRes.error);
     }
     if (appointmentsRes.error) {
@@ -106,9 +104,5 @@ export async function GET(request: Request) {
     };
   });
 
-  return NextResponse.json({
-    date,
-    slots,
-    debug: { busyCount: busyRanges.length, error: debugError },
-  });
+  return NextResponse.json({ date, slots });
 }

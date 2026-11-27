@@ -12,7 +12,7 @@ export function createAdminClient() {
     throw new Error('Missing Supabase admin environment variables');
   }
 
-  return createClient(url, serviceKey, {
+  return createClient(new URL(url.trim()).origin, serviceKey.trim(), {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
